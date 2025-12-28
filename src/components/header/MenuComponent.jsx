@@ -1,0 +1,60 @@
+import { Link } from 'react-router';
+import { SpinnerComponent } from '../spinner/SpinnerComponent';
+import { useMenuComponent } from './useMenuComponent';
+
+import logo from '../../assets/logo.png';
+import styles from './MenuComponent.module.css';
+
+export const MenuComponent = () => {
+  const {
+    searchText,
+    handleSearchChange,
+    handleKeyDown,
+    handleBtnBuscarClick,
+    favoritos,
+    state,
+    location
+  } = useMenuComponent();
+
+  return (
+    <>
+      {state.loading && <SpinnerComponent />}
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <div className={styles.logo}>
+            <Link to="/">
+              
+              <img src={logo} alt="eCommerce Logo" />
+              <span>MyStore</span>
+            </Link>
+          </div>
+          <nav className={styles.navigation}>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/admin-producto">Mantenedor de Productos</Link></li>
+              <li><Link to='/login'>Iniciar session</Link></li>
+              <li><Link to='/register'>Registrarse</Link></li>
+            </ul>
+          </nav>
+            <div className={styles.searchBar} style={{ visibility: (location.pathname === '/') ? "visible" : "hidden" }}>
+              <input 
+                type="text" 
+                placeholder="Buscar producto..." 
+                value={searchText} 
+                onChange={handleSearchChange} 
+                onKeyDown={handleKeyDown}
+                aria-label="Search"
+              />
+              <button type="button" onClick={e => handleBtnBuscarClick(e)}>Buscar</button>
+          </div>
+          <div className={styles.userActions}>
+            <Link to="/cart">
+              <span className={styles.icon}>❤️</span>
+              <span className={styles.cartCount}>{favoritos}</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+};
