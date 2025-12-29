@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useProducts } from '../../contexts/ProductContext';
+import { cargarImagen } from '../../utils/images';
 
 
 export const useProductCard = ({...data}) => {
@@ -8,8 +9,21 @@ export const useProductCard = ({...data}) => {
     const titles = product_title.split('|')
     const [isFavorite, setIsFavorite] = useState(false);
     const { setContadorFavoritos } = useProducts();
+    const [ urlImagen, setUrlImagen ] = useState()
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const cargarFoto = async () => {
+            try{
+                const url = await cargarImagen(product_photo);
+                setUrlImagen(url);
+            }catch(error){
+                console.log(error)
+            }
+        }
+        cargarFoto();
+        // eslint-disable-next-line
+    },[])
 
 
     useEffect(()=> {
@@ -65,7 +79,7 @@ export const useProductCard = ({...data}) => {
     return {
         asin,
         titles,
-        product_photo, 
+        urlImagen, 
         product_star_rating, 
         product_num_ratings, 
         product_price,

@@ -7,7 +7,7 @@ export const ProductCard = React.memo((data) => {
     const {
         asin,
         titles,
-        product_photo, 
+        urlImagen, 
         product_star_rating, 
         product_num_ratings, 
         product_price,
@@ -23,7 +23,7 @@ export const ProductCard = React.memo((data) => {
             <button className={styles.favoriteButton} onClick={toggleFavorite}>
                 {isFavorite ? '♥' : '♡'}
             </button>
-            <img src={product_photo} alt={asin} onClick={handleProdictoClick}/>
+            <img src={urlImagen} alt={asin} onClick={handleProdictoClick}/>
             <div className={styles.productInfo}>
                 <div className={styles.productTitle}>{titles[0]}</div>
                 <div className={styles.productTitle}>{titles[1]}</div>
