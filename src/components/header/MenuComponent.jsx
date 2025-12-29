@@ -7,23 +7,25 @@ import styles from './MenuComponent.module.css';
 
 export const MenuComponent = () => {
   const {
+    isScrolled,
     searchText,
     handleSearchChange,
     handleKeyDown,
     handleBtnBuscarClick,
     favoritos,
     state,
-    location
+    location,
+    userSession,
+    endSession
   } = useMenuComponent();
 
   return (
     <>
       {state.loading && <SpinnerComponent />}
-      <header className={styles.header}>
+      <header className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}>
         <div className={styles.headerContent}>
           <div className={styles.logo}>
             <Link to="/">
-              
               <img src={logo} alt="eCommerce Logo" />
               <span>MyStore</span>
             </Link>
@@ -32,8 +34,6 @@ export const MenuComponent = () => {
             <ul>
               <li><Link to="/">Home</Link></li>
               <li><Link to="/admin-producto">Mantenedor de Productos</Link></li>
-              <li><Link to='/login'>Iniciar session</Link></li>
-              <li><Link to='/register'>Registrarse</Link></li>
             </ul>
           </nav>
             <div className={styles.searchBar} style={{ visibility: (location.pathname === '/') ? "visible" : "hidden" }}>
@@ -52,6 +52,19 @@ export const MenuComponent = () => {
               <span className={styles.icon}>❤️</span>
               <span className={styles.cartCount}>{favoritos}</span>
             </Link>
+              <div class={styles.userMenu}>
+                <ul>
+                  {(!userSession || !userSession.isLoggedIn) &&
+                    <>
+                      <li><Link to='/login'>Iniciar session</Link></li>
+                      <li><Link to='/register'>Registrarse</Link></li>
+                    </>
+                  }
+                  {userSession && userSession.isLoggedIn && 
+                    <li><Link onClick={endSession}>Cerrar session</Link></li>
+                  }
+                </ul>
+              </div>
           </div>
         </div>
       </header>

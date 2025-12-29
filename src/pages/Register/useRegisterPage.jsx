@@ -1,9 +1,10 @@
 import { useHttp } from '../../hooks/useHttp';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { RegisterSchema } from './RegisterSchema';
 
 export const useRegisterPage = () => {
-    const { loading, request } = useHttp();
+    const { loading, sendRequest } = useHttp();
     const [formData, setFormData] = useState({
         username: '',
         nombre: '',
@@ -13,42 +14,36 @@ export const useRegisterPage = () => {
         confirmPassword: '',
         rol: ''
     });
-    const [ formErrors, setFormErrors ] = useState([]);
+    const [ formErrors, setFormErrors ] = useState({});
     const navigate = useNavigate();
 
 
     const handleChange = (e) => {
-        const value = e.target.value;
-        
-        if(e.target.value.trim().length === 0){
-            setFormErrors({...formErrors, [e.target.name]: 'El campo es requerido'});
-        }else if(e.target.name === 'password') {
-            if(e.target.value === formData.confirmPassword && formData.confirmPassword.trim().length > 0){
-                setFormErrors({...formErrors, password: '', confirmPassword: ''})
-            }else{
-                setFormErrors({...formErrors, [e.target.name]: value !== formData.confirmPassword ?'La contraseña y la confirmación de contraseña no son iguales' : ''})       
-            }
-            
-        }else if(e.target.name === 'confirmPassword'){
-            if(e.target.value === formData.password && formData.password.trim().length > 0){
-                setFormErrors({...formErrors, password: '', confirmPassword: ''})
-            }else{
-                setFormErrors({...formErrors, [e.target.name]: value !== formData.password ? 'La contraseña y la confirmación de contraseña no son iguales' : ''})
-            }
-        }else{
-            setFormErrors({...formErrors, [e.target.name]: ''});
-        }
+        const { name, value } = e.target;
+        const updatedFormData = { ...formData, [name]: value };
+        setFormData(updatedFormData);
 
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const result = RegisterSchema.safeParse(updatedFormData);
+
+        if (!result.success) {
+            validaDatos(result);
+        } else {
+            setFormErrors({});
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!validaDatos()){
+        
+        const result = RegisterSchema.safeParse(formData);
+
+        if (!result.success) {
+            validaDatos(result);
             return;
         }
+
         try{
-            const response = await request("/api/register", "POST", formData);        
+            const response = await sendRequest("/api/register", "POST", formData);        
             setFormData({
                 username: '',
                 nombre: '',
@@ -67,27 +62,20 @@ export const useRegisterPage = () => {
         }
     };
 
-    const validaDatos = () => {
-        if(
-            formData.username.trim().length === 0 || 
-            formData.nombre.trim().length === 0 ||
-            formData.apellido.trim().length === 0 ||
-            formData.email.trim().length === 0 ||
-            formData.password.trim().length === 0 ||
-            formData.confirmPassword.trim().length === 0 || 
-            formData.password !== formData.confirmPassword
-        ){
-            return false;
-        }else{
-            return true;
-        }
+    const validaDatos = (result) => {
+        const errors = result.error.issues.reduce((acc, error) => {
+            const key = Array.isArray(error.path) && error.path.length > 0 ? error.path[0] : '_form';
+            acc[key] = error.message;
+            return acc;
+        }, {});
+        setFormErrors(errors);
     }
 
-  return {
-    loading,
-    formData,
-    formErrors,
-    handleChange,
-    handleSubmit
-  }
+    return {
+        loading,
+        formData,
+        formErrors,
+        handleChange,
+        handleSubmit
+    }
 }

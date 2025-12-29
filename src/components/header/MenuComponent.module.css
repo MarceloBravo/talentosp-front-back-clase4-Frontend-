@@ -5,7 +5,10 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  -webkit-box-shadow: 1px 6px 20px -1px rgba(0,0,0,0.38); 
+}
+
+.headerScrolled {
+   -webkit-box-shadow: 1px 6px 20px -1px rgba(0,0,0,0.38); 
   box-shadow: 1px 6px 20px -1px rgba(0,0,0,0.38);
 }
 
@@ -99,4 +102,13 @@
   padding: 0.2rem 0.5rem;
   font-size: 0.75rem;
   font-weight: bold;
+}
+
+.userMenu ul{
+  display: flex;
+  list-style-type: none
+}
+
+.userMenu li{
+  padding: 0px 5px;
 }
