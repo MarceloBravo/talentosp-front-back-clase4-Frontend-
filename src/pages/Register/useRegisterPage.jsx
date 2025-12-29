@@ -12,16 +12,31 @@ export const useRegisterPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        rol: ''
+        rol: 'admin'
     });
     const [ formErrors, setFormErrors ] = useState({});
+    const [passwordStrength, setPasswordStrength] = useState(0);
     const navigate = useNavigate();
 
+
+    const calculatePasswordStrength = (password) => {
+        let score = 0;
+        if (!password) return 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^a-zA-Z0-9]/.test(password)) score++;
+        return score;
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         const updatedFormData = { ...formData, [name]: value };
         setFormData(updatedFormData);
+
+        if (name === 'password') {
+            setPasswordStrength(calculatePasswordStrength(value));
+        }
 
         const result = RegisterSchema.safeParse(updatedFormData);
 
@@ -75,6 +90,7 @@ export const useRegisterPage = () => {
         loading,
         formData,
         formErrors,
+        passwordStrength,
         handleChange,
         handleSubmit
     }

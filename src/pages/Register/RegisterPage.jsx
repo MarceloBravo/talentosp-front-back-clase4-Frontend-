@@ -2,12 +2,14 @@ import { Link } from 'react-router-dom';
 import { SpinnerComponent } from '../../components/spinner/SpinnerComponent';
 import { useRegisterPage } from './useRegisterPage';
 import styles from './RegisterPage.module.css';
+import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator/PasswordStrengthIndicator';
 
 export const RegisterPage = () => {
     const {
         loading,
         formData,
         formErrors,
+        passwordStrength,
         handleChange,
         handleSubmit
     } = useRegisterPage();
@@ -80,29 +82,6 @@ export const RegisterPage = () => {
                     </div>
                     </div>
 
-                    {/* este campo se agregó sólo para efectos de funcionalidad del ejemplo, 
-                    en una aplicación real no se permite la selección del rol al usuario, 
-                    en su lugar se le otorga un rol por defecto */}
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="rol">Rol <small>(Campo no disponible en una app real)</small> </label>
-                        <div className={styles.fieldContainer}>
-                            <select  
-                                className={styles.inputField} 
-                                id='rol' 
-                                name='rol' 
-                                required
-                                value={formData.rol}
-                                onChange={e => handleChange(e)}
-                                >
-                                <option value="" disabled>Seleccione un rol</option>
-                                <option value="admin">admin</option>
-                                <option value="user">administrativo</option>
-                                <option value="guest">invitado</option>
-                            </select>
-                            {formErrors.rol && <span className='label-error'>{formErrors.rol}</span>}
-                        </div>
-                    </div>
-
                     <div className={styles.inputGroup}>
                         <label htmlFor="password">Contraseña</label>
                         <div className="input-container">
@@ -116,6 +95,7 @@ export const RegisterPage = () => {
                                 required
                             />
                             {formErrors.password && <label htmlFor="password" className="label-error">{formErrors.password}</label>}
+                            <PasswordStrengthIndicator strength={passwordStrength} />
                         </div>
                     </div>
 
