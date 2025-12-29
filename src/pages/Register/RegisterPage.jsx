@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { SpinnerComponent } from '../../components/spinner/SpinnerComponent';
 import { useRegisterPage } from './useRegisterPage';
-import styles from './RegisterPage.module.css';
 import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator/PasswordStrengthIndicator';
+import styles from './RegisterPage.module.css';
 
 export const RegisterPage = () => {
     const {
@@ -11,9 +11,10 @@ export const RegisterPage = () => {
         formErrors,
         passwordStrength,
         handleChange,
-        handleSubmit
+        handleSubmit,
+        setStyleField
     } = useRegisterPage();
-    
+
 
     return (
         <>
@@ -24,7 +25,8 @@ export const RegisterPage = () => {
                     <div className={styles.inputGroup}>
                     <label htmlFor="username">Nombre de usuario</label>
                         <div className="input-container">
-                            <input
+                            <input                                
+                                className={setStyleField(formErrors.username, formData.username)}
                                 type="text"
                                 id="username"
                                 name="username"
@@ -40,6 +42,7 @@ export const RegisterPage = () => {
                     <label htmlFor="nombre">Nombre</label>
                         <div className="input-container">
                             <input
+                                className={setStyleField(formErrors.nombre, formData.nombre)}
                                 type="text"
                                 id="nombre"
                                 name="nombre"
@@ -55,6 +58,7 @@ export const RegisterPage = () => {
                     <label htmlFor="apellido">Apellido</label>
                         <div className="input-container">
                             <input
+                                className={setStyleField(formErrors.apellido, formData.apellido)}
                                 type="text"
                                 id="apellido"
                                 name="apellido"
@@ -70,6 +74,7 @@ export const RegisterPage = () => {
                     <label htmlFor="email">Email</label>
                     <div className="input-container">
                         <input
+                            className={setStyleField(formErrors.email, formData.email)}
                             type="email"
                             id="email"
                             name="email"
@@ -86,6 +91,7 @@ export const RegisterPage = () => {
                         <label htmlFor="password">Contraseña</label>
                         <div className="input-container">
                             <input
+                                className={setStyleField(formErrors.pasword, formData.password)}
                                 type="password"
                                 id="password"
                                 name="password"
@@ -105,6 +111,7 @@ export const RegisterPage = () => {
                         <label htmlFor="confirmPassword">Confirmación de Contraseña</label>
                         <div className="input-container">
                             <input
+                                className={setStyleField(formErrors.confirmPassword, formData.confirmPassword)}
                                 type="password"
                                 id="confirmPassword"
                                 name="confirmPassword"

@@ -54,6 +54,14 @@
     width: 100%;
 }
 
+.isOk{
+  border: solid thin green !important;
+}
+
+.isError{
+  border: solid thin  red !important;
+}
+
 .button {
   width: 100%;
   padding: 0.75rem;
@@ -83,3 +91,4 @@
 .linkText a:hover {
   text-decoration: underline;
 }
+

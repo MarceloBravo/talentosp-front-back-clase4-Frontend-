@@ -7,6 +7,7 @@ export const MantenedorProductoFormPage = () => {
         id,
         formData,
         validationErrors,
+        uploadProgress,
         handleInputChange,
         handleCheckboxChange,
         handleInputNumberChange,
@@ -28,6 +29,13 @@ export const MantenedorProductoFormPage = () => {
                 <img src={formData.product_photo ?? imgDefault} alt={formData.product_title}/>
             <button className={styles.btnSuccess} onClick={handleCargarImagenClick}>Cargar imágen</button>
             <input type="file" ref={inputRef} accept="image/png" style={{display: 'none'}} onChange={handleFileChange} />
+            {uploadProgress > 0 && (
+                    <div className={styles.progressBarContainer}>
+                        <div className={styles.progressBar} style={{ width: `${uploadProgress}%` }}>
+                            {uploadProgress}%
+                        </div>
+                    </div>
+                )}
             </div>
             <div className={styles['form-group-right']}>
                 <form>

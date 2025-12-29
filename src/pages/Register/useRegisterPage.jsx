@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RegisterSchema } from './RegisterSchema';
 
+import styles from './RegisterPage.module.css';
+
 export const useRegisterPage = () => {
     const { loading, sendRequest } = useHttp();
     const [formData, setFormData] = useState({
@@ -56,18 +58,21 @@ export const useRegisterPage = () => {
             validaDatos(result);
             return;
         }
-
-        try{
-            const response = await sendRequest("/api/register", "POST", formData);        
-            setFormData({
+        // Implementación de UI optimista: la constante con datos del formulario es reseteada antes de enviar los datos
+        const data = {...formData};
+        setFormData({
                 username: '',
                 nombre: '',
                 apellido: '',
                 email: '',
                 password: '',
                 confirmPassword: '',
-                rol: ''
+                rol: 'admin'
             });
+
+        try{
+            const response = await sendRequest("/api/register", "POST", data);        
+            
             alert(response.mensaje);
             setTimeout(() => {
                 navigate('/login');
@@ -86,12 +91,17 @@ export const useRegisterPage = () => {
         setFormErrors(errors);
     }
 
+    const setStyleField = (errorValue, fieldValue) => {
+        return errorValue ? styles.isError : (fieldValue ? styles.isOk : '')
+    }
+
     return {
         loading,
         formData,
         formErrors,
         passwordStrength,
         handleChange,
-        handleSubmit
+        handleSubmit,
+        setStyleField
     }
 }

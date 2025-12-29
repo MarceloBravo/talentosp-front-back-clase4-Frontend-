@@ -25,6 +25,7 @@ export const useMantenedorProductoFormPage = () => {
         sales_volume: ''
     })
     const [ validationErrors, setValidationErrors ] = useState({})
+    const [ uploadProgress, setUploadProgress ] = useState(0)
     const navigate = useNavigate()
     const params = useParams()
     const id = params.id
@@ -135,6 +136,7 @@ export const useMantenedorProductoFormPage = () => {
 
     const handleGrabarNuevo = async () => {
         try{
+            setUploadProgress(0);
             const fd = new FormData()
             Object.keys(formData).forEach(key => {
                 if (key === 'product_photo_file' && formData[key]) {
@@ -149,7 +151,15 @@ export const useMantenedorProductoFormPage = () => {
                     }
                 }
             })
-            const response = await sendRequest('/api/productos', 'POST', fd)
+            
+            const config = {
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(percentCompleted);
+                }
+            };
+
+            const response = await sendRequest('/api/productos', 'POST', fd, config)
             console.log(response)
             alert('Producto guardado correctamente')
             navigate('/admin-producto')
@@ -160,6 +170,7 @@ export const useMantenedorProductoFormPage = () => {
 
     const handleActualizar = async () => {
         try{
+            setUploadProgress(0);
             const fd = new FormData()
             Object.keys(formData).forEach(key => {
                 if (key === 'product_photo_file' && formData[key]) {
@@ -174,7 +185,15 @@ export const useMantenedorProductoFormPage = () => {
                     }
                 }
             })
-            await sendRequest('/api/productos/' + id, 'PUT', fd)
+
+            const config = {
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(percentCompleted);
+                }
+            };
+
+            await sendRequest('/api/productos/' + id, 'PUT', fd, config)
             alert('Producto actualizado correctamente')
             navigate('/admin-producto')
         }catch(error){
@@ -242,6 +261,7 @@ export const useMantenedorProductoFormPage = () => {
     id,
     formData,
     validationErrors,
+    uploadProgress,
     handleInputChange,
     handleCheckboxChange,
     handleInputNumberChange,
