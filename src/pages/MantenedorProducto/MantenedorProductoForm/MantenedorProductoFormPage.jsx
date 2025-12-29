@@ -6,7 +6,7 @@ export const MantenedorProductoFormPage = () => {
     const {
         id,
         formData,
-        errorFormData,
+        validationErrors,
         handleInputChange,
         handleCheckboxChange,
         handleInputNumberChange,
@@ -46,7 +46,7 @@ export const MantenedorProductoFormPage = () => {
                                 value={formData.asin}
                                 onChange={e => handleInputChange(e)}
                             />
-                            {errorFormData.asin && <span className={styles.textDanger}>{errorFormData.asin}</span>}
+                            {validationErrors.asin?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.asin._errors[0]}</span>}
                         </div>
                     </div>
                     <div className={styles.formGroup}>
@@ -101,7 +101,7 @@ export const MantenedorProductoFormPage = () => {
                                 value={formData.product_num_ratings}
                                 onChange={e => handleInputNumberChange(e)}
                             />
-                            {errorFormData.product_num_ratings && <span className={styles.textDanger}>{errorFormData.product_num_ratings}</span>}
+                            {validationErrors.product_num_ratings?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.product_num_ratings._errors[0]}</span>}
                         </div>
                     </div>
                     <div className={styles.formGroup}>
@@ -116,7 +116,7 @@ export const MantenedorProductoFormPage = () => {
                                 value={formData.product_original_price}
                                 onChange={e => handleInputNumberChange(e)}
                             />
-                            {errorFormData.product_original_price && <span className={styles.textDanger}>{errorFormData.product_original_price}</span>}
+                            {validationErrors.product_original_price?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.product_original_price._errors[0]}</span>}
                         </div>
                     </div>
                     <div className={styles.formGroup}>
@@ -131,7 +131,7 @@ export const MantenedorProductoFormPage = () => {
                                 value={formData.product_price}
                                 onChange={e => handleInputNumberChange(e)}
                             />
-                            {errorFormData.product_price && <span className={styles.textDanger}>{errorFormData.product_price}</span>}
+                            {validationErrors.product_price?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.product_price._errors[0]}</span>}
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@ export const MantenedorProductoFormPage = () => {
                                 <option value='JPY'>Yen Japonés</option>
                                 <option value='AUD'>Dólar Australiano</option>
                             </select>
-                            {errorFormData.product_star_rating && <span className={styles.textDanger}>{errorFormData.product_star_rating}</span>}
+                            {validationErrors.currency?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.currency._errors[0]}</span>}
                         </div>
                     </div>
 
@@ -167,11 +167,11 @@ export const MantenedorProductoFormPage = () => {
                                 name="product_star_rating" 
                                 placeholder='Código del producto'
                                 min={0}
-                                max={10}
+                                max={5}
                                 value={formData.product_star_rating}
                                 onChange={e => handleInputNumberChange(e)}
                             />
-                            {errorFormData.product_star_rating && <span className={styles.textDanger}>{errorFormData.product_star_rating}</span>}
+                            {validationErrors.product_star_rating?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.product_star_rating._errors[0]}</span>}
                         </div>
                     </div>
 
@@ -187,7 +187,7 @@ export const MantenedorProductoFormPage = () => {
                                 value={formData.product_title}
                                 onChange={e => handleInputChange(e)}
                             />
-                            {errorFormData.product_title && <span className={styles.textDanger}>{errorFormData.product_title}</span>}
+                            {validationErrors.product_title?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.product_title._errors[0]}</span>}
                         </div>
                     </div>
                     <div className={styles.formGroup}>
@@ -202,7 +202,7 @@ export const MantenedorProductoFormPage = () => {
                                 value={formData.sales_volume}
                                 onChange={e => handleInputChange(e)}
                             />
-                            {errorFormData.sales_volume && <span className={styles.textDanger}>{errorFormData.sales_volume}</span>}
+                            {validationErrors.sales_volume?._errors?.[0] && <span className={styles.textDanger}>{validationErrors.sales_volume._errors[0]}</span>}
                         </div>
                     </div>
                     

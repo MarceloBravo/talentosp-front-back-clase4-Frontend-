@@ -20,7 +20,7 @@ export const MantenedorProductoListPage = () => {
     if(state.isLoading) return <SpinnerComponent/>
 
     return (
-        <div>
+        <div className={styles.container}>
             <h1>Mantenedor de Productos</h1>
 
             <div className={styles.searchContainer}>

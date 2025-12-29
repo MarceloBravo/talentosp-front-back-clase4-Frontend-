@@ -1,3 +1,7 @@
+.container{
+    padding: 0em 6em;
+}
+
 .searchContainer {
     display: flex;
     justify-content: space-between;

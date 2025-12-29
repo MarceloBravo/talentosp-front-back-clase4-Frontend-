@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useHttp } from '../../../hooks/useHttp'
 import { cargarImagen } from '../../../utils/images'
+import { getMantenedorProductoFormSchema } from './MantenedorProductoFormSchema'
 import imgDefault from '../../../assets/imagen_foto.png'
+import imageCompression from 'browser-image-compression'
 
 export const useMantenedorProductoFormPage = () => {    
     const { error, sendRequest }= useHttp()
@@ -22,20 +24,34 @@ export const useMantenedorProductoFormPage = () => {
         product_title: '',
         sales_volume: ''
     })
-    const [ errorFormData, setErrorFormData ] = useState({
-        asin: '',
-        currency: '',
-        product_num_ratings: '',
-        product_original_price: '',
-        product_photo: '',
-        product_price: '',
-        product_star_rating: '',
-        product_title: '',
-        sales_volume: ''
-    })
+    const [ validationErrors, setValidationErrors ] = useState({})
     const navigate = useNavigate()
     const params = useParams()
     const id = params.id
+
+    const runValidation = (formDataToValidate, fieldName = null) => {
+        const schema = getMantenedorProductoFormSchema(!!id);
+        const result = schema.safeParse(formDataToValidate);
+
+        if (result.success) {
+            setValidationErrors({}); // Form is valid, clear all errors.
+            return true;
+        }
+
+        const errors = result.error.format();
+        if (fieldName) {
+            // We are validating a single field on change.
+            // Only update the error for that field.
+            setValidationErrors(prev => ({
+                ...prev,
+                [fieldName]: errors[fieldName],
+            }));
+        } else {
+            // We are validating the whole form on submit.
+            setValidationErrors(errors);
+        }
+        return false;
+    }
 
     useEffect(()=> {
         if(id){
@@ -68,34 +84,33 @@ export const useMantenedorProductoFormPage = () => {
 
 
     const handleInputChange = (e) => {
-        setErrorFormData({
-            ...errorFormData,
-            [e.target.name]: e.target.value.length === 0 ? 'El campo no puede estar vacío' : ''
-        })
-
-        setFormData({
+        const { name, value } = e.target;
+        const newFormData = {
             ...formData,
-            [e.target.name]: e.target.value
-        })
+            [name]: value
+        };
+        setFormData(newFormData);
+        runValidation(newFormData, name);
     }
 
     const handleCheckboxChange = (e) => {
-        setFormData({
+        const { name, checked } = e.target;
+        const newFormData = {
             ...formData,
-            [e.target.name]: e.target.checked ? true : false
-        })
+            [name]: checked
+        };
+        setFormData(newFormData);
+        runValidation(newFormData, name);
     }
 
     const handleInputNumberChange = (e) => {
-        setErrorFormData({
-            ...errorFormData,
-            [e.target.name]: e.target.value.length === 0 ? 'El campo no puede estar vacío' : ''
-        })
-
-        setFormData({
+        const { name, value } = e.target;
+        const newFormData = {
             ...formData,
-            [e.target.name]: e.target.value
-        })
+            [name]: value
+        };
+        setFormData(newFormData);
+        runValidation(newFormData, name);
     }
 
     const handleCancelarClick = () => {
@@ -103,10 +118,11 @@ export const useMantenedorProductoFormPage = () => {
     }
 
     const handleGrabarClick = async () => {
-        if(!validaDatos()){
+        if (!runValidation(formData)) {
             alert('Los datos ingresados no son válidos o están incompletos');
             return;
         }
+
         if(!window.confirm('¿Está seguro de guardar los datos?')){
             return;
         }
@@ -122,7 +138,9 @@ export const useMantenedorProductoFormPage = () => {
             const fd = new FormData()
             Object.keys(formData).forEach(key => {
                 if (key === 'product_photo_file' && formData[key]) {
-                    fd.append('product_photo', formData[key])
+                    const file = formData[key];
+                    const fileName = file.name || 'image.png';
+                    fd.append('product_photo', file, fileName);
                 } else if (key !== 'product_photo' && key !== 'product_photo_file') {
                     if (['climate_pledge_friendly', 'is_amazon_choice', 'is_best_seller'].includes(key)) {
                         fd.append(key, formData[key] ? "true" : "false");
@@ -145,7 +163,9 @@ export const useMantenedorProductoFormPage = () => {
             const fd = new FormData()
             Object.keys(formData).forEach(key => {
                 if (key === 'product_photo_file' && formData[key]) {
-                    fd.append('product_photo', formData[key])
+                    const file = formData[key];
+                    const fileName = file.name || 'image.png';
+                    fd.append('product_photo', file, fileName);
                 } else if (key !== 'product_photo' && key !== 'product_photo_file') {
                     if (['climate_pledge_friendly', 'is_amazon_choice', 'is_best_seller'].includes(key)) {
                         fd.append(key, formData[key] ? "true" : "false");
@@ -176,55 +196,43 @@ export const useMantenedorProductoFormPage = () => {
         }
     }
 
-    const validaDatos = () => {
-        const {
-            asin,
-            currency,
-            product_num_ratings,
-            product_original_price,
-            product_price,
-            product_star_rating,
-            product_title,
-            sales_volume
-        } = formData;
-    
-        if (
-            !asin || asin.trim() === '' ||
-            !currency || currency.trim() === '' ||
-            !product_title || product_title.trim() === '' ||
-            !sales_volume || sales_volume.trim() === '' ||
-            product_num_ratings === null || String(product_num_ratings).trim() === '' ||
-            product_original_price === null || String(product_original_price).trim() === '' ||
-            product_price === null || String(product_price).trim() === '' ||
-            product_star_rating === null || String(product_star_rating).trim() === ''
-        ) {
-            return false;
-        }
-    
-        return true;
-    }
-
-
     const handleCargarImagenClick = () => {
         inputRef.current.click()
     }
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const file = e.target.files[0]
         if (file) {
             if (file.type !== 'image/png') {
                 alert('Solo se permiten imágenes PNG')
                 return
             }
-            const reader = new FileReader()
-            reader.onload = () => {
-                setFormData({
-                    ...formData,
-                    product_photo: reader.result,
-                    product_photo_file: file
-                })
+
+            const options = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true,
             }
-            reader.readAsDataURL(file)
+
+            try {
+                const compressedFile = await imageCompression(file, options);
+                
+                const reader = new FileReader()
+                reader.onload = () => {
+                    const newFormData = {
+                        ...formData,
+                        product_photo: reader.result,
+                        product_photo_file: compressedFile
+                    };
+                    setFormData(newFormData)
+                    runValidation(newFormData, 'product_photo_file');
+                }
+                reader.readAsDataURL(compressedFile)
+
+            } catch (error) {
+                alert('Ocurrió un error al comprimir la imagen.')
+                console.error(error);
+            }
         }
     }
 
@@ -233,7 +241,7 @@ export const useMantenedorProductoFormPage = () => {
   return {
     id,
     formData,
-    errorFormData,
+    validationErrors,
     handleInputChange,
     handleCheckboxChange,
     handleInputNumberChange,
